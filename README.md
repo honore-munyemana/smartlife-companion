@@ -59,6 +59,6 @@ lib/
 Honore Munyemana 
 Information Managment Student  
 
-Contact me on [LinkedIn](https://www.linkedin.com/in/honore-/) or [Email](honoremushya@gmail.com)_
+Contact me on [LinkedIn](https://www.linkedin.com/in/honore-/) or [Email](honoremushya@gmail.com)
 
  📜 License
