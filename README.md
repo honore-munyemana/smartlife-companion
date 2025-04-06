@@ -5,7 +5,7 @@ A modern mobile application built with Flutter that integrates Firebase Authenti
  Features
 
  🔐 Firebase Authentication – Sign in, Sign up, Logout functionality
- 🧮 Calculator Screen** – Perform basic calculations
+ 🧮 Calculator Screen– Perform basic calculations
  📊 Dashboard Screen – View overview & toggle light/dark themes
  📦 Product List – Add, update, and delete products using SQLite
  🖼️ Profile Image Picker – Select avatar from camera or gallery
