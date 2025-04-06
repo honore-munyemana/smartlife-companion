@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "175517846168",
+    "project_id": "wed-app-a9e4d",
+    "storage_bucket": "wed-app-a9e4d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175517846168:android:7afb0900bdda76e440deed",
+        "android_client_info": {
+          "package_name": "com.example.wed_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "175517846168-eu8m42849dcanr2a78l77jq8uq40kpo8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHNe_dAVapnSzWbIxl_27kLlZCr5rAICQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "175517846168-eu8m42849dcanr2a78l77jq8uq40kpo8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
