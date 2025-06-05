@@ -49,13 +49,13 @@ git clone https://github.com/honore-munyemana/smartlife-companion.git
 cd smartlife-companion
 ```
 ### 2. Install dependencies
-
+```bash
 flutter pub get
-
+```
 ### 3. Run the app
-
+```bash
 flutter run
-
+```
 ## 🔐 Permissions Required
 
 📍 Location (foreground & background)
