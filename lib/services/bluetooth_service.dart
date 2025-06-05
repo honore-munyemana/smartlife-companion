@@ -1,6 +1,7 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:async';
 import '../main.dart';
+import '../helpers/notification_helper.dart';
 
 class BluetoothService {
   StreamSubscription<BluetoothAdapterState>? _bluetoothSubscription;
@@ -9,7 +10,11 @@ class BluetoothService {
   Future<void> checkBluetoothState() async {
     BluetoothAdapterState state = await FlutterBluePlus.adapterState.first; 
     print('📡 Bluetooth State: $state');
-    showNotification('Bluetooth', 'Bluetooth State: $state', 'bluetooth_alerts');
+    await NotificationHelper.showNotification(
+      'Bluetooth',
+      'Bluetooth State: $state',
+      'bluetooth_alerts'
+    );
   }
 
   /// ✅ Get a list of connected Bluetooth devices
@@ -46,9 +51,13 @@ class BluetoothService {
 
   /// ✅ Listen for Bluetooth state changes
   void startBluetoothMonitoring() {
-    _bluetoothSubscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) {
+    _bluetoothSubscription = FlutterBluePlus.adapterState.listen((BluetoothAdapterState state) async {
       print('📡 Bluetooth State Changed: $state');
-      showNotification('Bluetooth', 'Bluetooth State: $state', 'bluetooth_alerts');
+      await NotificationHelper.showNotification(
+        'Bluetooth',
+        'Bluetooth State: $state',
+        'bluetooth_alerts'
+      );
     });
   }
 

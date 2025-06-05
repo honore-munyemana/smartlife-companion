@@ -1,0 +1,2 @@
+C:/Users/HONORE/OneDrive/Desktop/mobile 8/wed_app/android/app/.cxx/Debug/27675w4g/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/HONORE/OneDrive/Desktop/mobile 8/wed_app/android/app/.cxx/Debug/27675w4g/x86_64/CMakeFiles/rebuild_cache.dir

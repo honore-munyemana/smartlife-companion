@@ -6,8 +6,10 @@ import 'calculator_screen.dart';
 import 'signin_screen.dart';
 import 'dashboard_screen.dart';
 import 'product_list_screen.dart';
-import 'contacts_screen.dart'; // Import the new contacts screen
-
+import 'contacts_screen.dart';
+import 'myhome_map_screen.dart';
+import 'light_monitor_screen.dart'; // <-- Light Monitor import
+//import 'camera_light_monitor_screen.dart';
 class HomeScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
 
@@ -20,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   int _currentIndex = 0;
-  File? _image; // Store selected image
+  File? _image;
   final ImagePicker _picker = ImagePicker();
   late List<Widget> _screens;
 
@@ -31,10 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
       CalculatorScreen(),
       DashboardScreen(toggleTheme: widget.toggleTheme),
       ProductListScreen(),
+      MyHomeMapScreen(),
     ];
   }
 
-  // Function to pick an image
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -44,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Show bottom sheet to choose camera or gallery
   void _showImagePicker() {
     showModalBottomSheet(
       context: context,
@@ -94,9 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: widget.toggleTheme,
           ),
           GestureDetector(
-            onTap: _showImagePicker, // Tap to edit image
+            onTap: _showImagePicker,
             child: CircleAvatar(
-              backgroundImage: _image != null ? FileImage(_image!) : AssetImage('assets/profile_avatar.jpg') as ImageProvider,
+              backgroundImage: _image != null
+                  ? FileImage(_image!)
+                  : AssetImage('assets/profile_avatar.jpg') as ImageProvider,
               radius: 18,
             ),
           ),
@@ -110,9 +113,11 @@ class _HomeScreenState extends State<HomeScreen> {
               accountName: Text(user?.displayName ?? "Guest"),
               accountEmail: Text(user?.email ?? "guest@example.com"),
               currentAccountPicture: GestureDetector(
-                onTap: _showImagePicker, // Tap to change profile picture
+                onTap: _showImagePicker,
                 child: CircleAvatar(
-                  backgroundImage: _image != null ? FileImage(_image!) : AssetImage('assets/profile_avatar.jpg') as ImageProvider,
+                  backgroundImage: _image != null
+                      ? FileImage(_image!)
+                      : AssetImage('assets/profile_avatar.jpg') as ImageProvider,
                 ),
               ),
             ),
@@ -141,8 +146,16 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.home),
+              title: Text("My Home"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, 'myhome_map');
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.contacts),
-              title: Text("Contacts"), // New Contacts option
+              title: Text("Contacts"),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -151,6 +164,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+             ListTile(
+               leading: Icon(Icons.light_mode),
+               title: Text("Light Monitor"),
+               onTap: () {
+                 Navigator.pop(context);
+                 Navigator.push(
+                   context,
+                   MaterialPageRoute(builder: (context) => LightMonitorScreen()),
+                 );
+               },
+             ),
+//             ListTile(
+//   leading: Icon(Icons.light_mode),
+//   title: Text("Light Monitor (Camera)"),
+//   onTap: () {
+//     Navigator.pop(context);
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(builder: (context) => CameraLightMonitorScreen()),
+//     );
+//   },
+// ),
+
             Divider(),
             ListTile(
               leading: Icon(Icons.logout),
@@ -163,7 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     PageRouteBuilder(
                       transitionDuration: Duration(milliseconds: 500),
-                      pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(toggleTheme: widget.toggleTheme),
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          SignInScreen(toggleTheme: widget.toggleTheme),
                       transitionsBuilder: (context, animation, secondaryAnimation, child) {
                         return FadeTransition(opacity: animation, child: child);
                       },
@@ -185,7 +222,9 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          navigateWithFade(context, index);
+          setState(() {
+            _currentIndex = index;
+          });
         },
         backgroundColor: Colors.white,
         selectedItemColor: Colors.blue,
@@ -195,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.calculate), label: 'Calculator'),
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Products'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'My Home'),
         ],
       ),
     );

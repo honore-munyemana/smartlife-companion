@@ -3,70 +3,79 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import './screens/signin_screen.dart';
 import './screens/home_screen.dart';
 import './services/connectivity_service.dart';
 import './services/battery_service.dart';
 import './services/bluetooth_service.dart';
+import './services/sensor_service.dart';
 import './helpers/theme_helper.dart'; // Import the ThemeHelper class
+import './screens/myhome_map_screen.dart'; 
+// Import the MyHomeMapScreen class
+import './services/geofence_service.dart'; // Import the GeofenceService class
+import './helpers/notification_helper.dart';
+import './services/shake_detector_service.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+// Top-level function for handling background notifications
+@pragma('vm:entry-point')
+Future<void> _backgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: \${message.messageId}");
 }
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-void initLocalNotifications() async {
+Future<void> initLocalNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
-  final InitializationSettings initializationSettings =
+
+  const InitializationSettings initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-}
 
-Future<void> showNotification(String title, String body, String channelId) async {
-  AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    channelId,
-    channelId,
-    channelDescription: 'Notifications for $channelId',
-    importance: Importance.max,
-    priority: Priority.high,
-  );
-
-  NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    title,
-    body,
-    platformChannelSpecifics,
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      // Handle notification tap
+    },
   );
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  initLocalNotifications();
+  
+  // Initialize notifications
+  await NotificationHelper.init();
+  
+  // Set up Firebase Messaging background handler
+  FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
+  
+  // Create and start geofence service
+  final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
+  final geofenceService = SimpleGeofenceService(
+    radiusMeters: 50, // 50-meter radius
+    interval: Duration(seconds: 10),
+    notifications: notifications,
+  );
+  
+  // Start geofence monitoring
+  await geofenceService.start();
 
-  // Load saved theme preference
-  bool isDarkMode = await ThemeHelper.loadTheme();
-
-  // Start services when the app launches
-  ConnectivityService().startListening();
-  BatteryService().startBatteryMonitoring();
-  BluetoothService().startBluetoothMonitoring();
-
-  runApp(MyApp(isDarkMode: isDarkMode));
+  final shakeDetector = ShakeDetectorService();
+  
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SensorService()),
+        Provider<SimpleGeofenceService>.value(value: geofenceService),
+        Provider<ShakeDetectorService>.value(value: shakeDetector),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
-  final bool isDarkMode;
-  MyApp({required this.isDarkMode});
-
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -77,7 +86,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _isDarkMode = widget.isDarkMode;
+    _isDarkMode = false; // Assuming default theme is light
   }
 
   void _toggleTheme() async {
@@ -95,6 +104,9 @@ class _MyAppState extends State<MyApp> {
       darkTheme: ThemeData.dark(),
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: AuthChecker(toggleTheme: _toggleTheme),
+      routes: {
+        '/myhome': (context) => MyHomeMapScreen(),
+      },
     );
   }
 }
