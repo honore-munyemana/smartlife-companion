@@ -157,7 +157,7 @@ Information Management Student
 
 📧 honoremushya@gmail.com
 
-🔗 LinkedIn Profile
+🔗 https://www.linkedin.com/in/honore-?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BuytplIQyQoSkcbw9Pi2RxA%3D%3D
 
 ## 📜 License
 
